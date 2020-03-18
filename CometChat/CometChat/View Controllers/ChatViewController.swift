@@ -27,21 +27,10 @@ final class ChatViewController: UIViewController {
   @IBOutlet weak var textAreaBottom: NSLayoutConstraint!
   @IBOutlet weak var emptyChatView: UIView!
   
-  private var typingIndicatorBottomConstraint: NSLayoutConstraint!
-  
-  
   // MARK: - Actions
   
   @IBAction func onSendButtonTapped(_ sender: Any) {
     sendMessage()
-  }
-    
-  private func setTypingIndicatorVisible(_ isVisible: Bool) {
-    let constant: CGFloat = isVisible ? -16 : 16
-    UIView.animate(withDuration: 0.4, delay: 0, options: .curveEaseInOut, animations: {
-      self.typingIndicatorBottomConstraint.constant = constant
-      self.view.layoutIfNeeded()
-    })
   }
   
   
@@ -57,7 +46,6 @@ final class ChatViewController: UIViewController {
     addTextViewPlaceholer()
     scrollToLastCell()
     
-    ChatService.shared.stopTyping(to: reciever)
     ChatService.shared.send(message: message, to: reciever)
   }
   
@@ -80,7 +68,6 @@ final class ChatViewController: UIViewController {
     setUpTableView()
     setUpTextView()
     startObservingKeyboard()
-    createTypingIndicator()
     tableView.dataSource = self
     
     ChatService.shared.onRecievedMessage = { [weak self] message in
@@ -89,18 +76,6 @@ final class ChatViewController: UIViewController {
       if !message.isIncoming || isFromReciever {
         self.messages.append(message)
         self.scrollToLastCell()
-      }
-    }
-            
-    ChatService.shared.onTypingStarted = { [weak self] user in
-      if user.id == self?.reciever.id {
-        self?.setTypingIndicatorVisible(true)
-      }
-    }
-    
-    ChatService.shared.onTypingEnded = { [weak self] user in
-      if user.id == self?.reciever.id {
-        self?.setTypingIndicatorVisible(false)
       }
     }
   }
@@ -211,21 +186,6 @@ final class ChatViewController: UIViewController {
     tableView.allowsSelection = false
   }
   
-  private func createTypingIndicator() {
-    let typingIndicator = TypingIndicatorView(recieverName: reciever.name)
-    
-    view.insertSubview(typingIndicator, belowSubview: textAreaBackground)
-    
-    typingIndicatorBottomConstraint = typingIndicator.bottomAnchor.constraint(
-      equalTo: textAreaBackground.topAnchor,
-      constant: 16)
-    typingIndicatorBottomConstraint.isActive = true
-            
-    NSLayoutConstraint.activate([
-      typingIndicator.heightAnchor.constraint(equalToConstant: 20),
-      typingIndicator.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 26)
-    ])
-  }
 }
 
 // MARK: - UITableViewDataSource
@@ -289,23 +249,6 @@ extension ChatViewController: UITextViewDelegate {
   
   func textViewDidBeginEditing(_ textView: UITextView) {
     removeTextViewPlaceholder()
-  }
-  
-  func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
-    let currentText: String = textView.text
-    let range = Range(range, in: currentText)!
-    let newText = currentText.replacingCharacters(in: range, with: text)
-    
-    switch (currentText.isEmpty, newText.isEmpty) {
-    case (true, false):
-      ChatService.shared.startTyping(to: reciever)
-    case (false, true):
-      ChatService.shared.stopTyping(to: reciever)
-    default:
-      break
-    }
-    
-    return true
   }
   
   func textViewDidEndEditing(_ textView: UITextView) {

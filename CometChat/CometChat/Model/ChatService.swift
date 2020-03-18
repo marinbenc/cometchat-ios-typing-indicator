@@ -43,9 +43,6 @@ final class ChatService {
   var onRecievedMessage: ((Message)-> Void)?
   var onUserStatusChanged: ((User)-> Void)?
   
-  var onTypingStarted: ((User)-> Void)?
-  var onTypingEnded: ((User)-> Void)?
-  
   func login(email: String, onComplete: @escaping (Result<User, Error>)-> Void) {
     
     CometChat.messagedelegate = self
@@ -147,15 +144,6 @@ final class ChatService {
       })
   }
   
-  func startTyping(to receiver: User) {
-    let typingIndicator = TypingIndicator(receiverID: receiver.id, receiverType: .user)
-    CometChat.startTyping(indicator: typingIndicator)
-  }
-  
-  func stopTyping(to receiver: User) {
-    let typingIndicator = TypingIndicator(receiverID: receiver.id, receiverType: .user)
-    CometChat.endTyping(indicator: typingIndicator)
-  }
 }
 
 extension ChatService: CometChatMessageDelegate {
@@ -180,23 +168,4 @@ extension ChatService: CometChatUserDelegate {
     }
   }
   
-  func onTypingStarted(_ typingDetails: TypingIndicator) {
-    guard let cometChatUser = typingDetails.sender else {
-      return
-    }
-    
-    DispatchQueue.main.async {
-      self.onTypingStarted?(User(cometChatUser))
-    }
-  }
-  
-  func onTypingEnded(_ typingDetails: TypingIndicator) {
-    guard let cometChatUser = typingDetails.sender else {
-      return
-    }
-
-    DispatchQueue.main.async {
-      self.onTypingEnded?(User(cometChatUser))
-    }
-  }
 }
