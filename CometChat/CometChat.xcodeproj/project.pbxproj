@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		17CCBB0614BDEFD0C892D2DF /* Pods_CometChat.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ED07FAA3825E8E8BB5A56250 /* Pods_CometChat.framework */; };
+		F564B94E24223171008A2CF2 /* TypingIndicatorVIew.swift in Sources */ = {isa = PBXBuildFile; fileRef = F564B94D24223171008A2CF2 /* TypingIndicatorVIew.swift */; };
 		F5805F192325498E0037201B /* ContactsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5805F182325498D0037201B /* ContactsViewController.swift */; };
 		F5805F1B232549C00037201B /* ContactsTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5805F1A232549C00037201B /* ContactsTableViewCell.swift */; };
 		F58DB6B322F322970018C36D /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F58DB6B222F322970018C36D /* AppDelegate.swift */; };
@@ -31,6 +32,7 @@
 		608DAA279B499395F7F6B462 /* Pods-CometChat.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-CometChat.release.xcconfig"; path = "Target Support Files/Pods-CometChat/Pods-CometChat.release.xcconfig"; sourceTree = "<group>"; };
 		BE22FBDA1C50A6B45641E1D9 /* Pods-CometChat.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-CometChat.debug.xcconfig"; path = "Target Support Files/Pods-CometChat/Pods-CometChat.debug.xcconfig"; sourceTree = "<group>"; };
 		ED07FAA3825E8E8BB5A56250 /* Pods_CometChat.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_CometChat.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		F564B94D24223171008A2CF2 /* TypingIndicatorVIew.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TypingIndicatorVIew.swift; sourceTree = "<group>"; };
 		F5805F182325498D0037201B /* ContactsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactsViewController.swift; sourceTree = "<group>"; };
 		F5805F1A232549C00037201B /* ContactsTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactsTableViewCell.swift; sourceTree = "<group>"; };
 		F58DB6AF22F322970018C36D /* CometChat.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CometChat.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -160,6 +162,7 @@
 				F5FD0A3222FC80B70096E777 /* WelcomeViewController.swift */,
 				F5FD0A3822FD5DCF0096E777 /* LoginViewController.swift */,
 				F5805F182325498D0037201B /* ContactsViewController.swift */,
+				F564B94D24223171008A2CF2 /* TypingIndicatorVIew.swift */,
 			);
 			path = "View Controllers";
 			sourceTree = "<group>";
@@ -285,6 +288,7 @@
 				F58DB6B522F322970018C36D /* ChatViewController.swift in Sources */,
 				F5FD0A3322FC80B70096E777 /* WelcomeViewController.swift in Sources */,
 				F5F961E522FD8C3F006C0196 /* ChatService.swift in Sources */,
+				F564B94E24223171008A2CF2 /* TypingIndicatorVIew.swift in Sources */,
 				F58DB6C922F32C6B0018C36D /* Colors.swift in Sources */,
 				F5FD0A2822FC51950096E777 /* OutgoingMessageTableViewCell.swift in Sources */,
 				F5FD0A3022FC79E40096E777 /* Message.swift in Sources */,

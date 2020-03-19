@@ -17,7 +17,7 @@ final class ChatViewController: UIViewController {
     static let placeholderMessage = "Type something"
   }
   
-  public var reciever: User!
+  public var receiver: User!
   
   // MARK: - Outlets
   
@@ -26,6 +26,33 @@ final class ChatViewController: UIViewController {
   @IBOutlet weak var textAreaBackground: UIView!
   @IBOutlet weak var textAreaBottom: NSLayoutConstraint!
   @IBOutlet weak var emptyChatView: UIView!
+  
+  private var typingIndicatorBottomConstraint: NSLayoutConstraint!
+  
+  private func createTypingIndicator() {
+    let typingIndicator = TypingIndicatorView(receiverName: receiver.name)
+    view.insertSubview(typingIndicator, belowSubview: textAreaBackground)
+    
+    typingIndicatorBottomConstraint = typingIndicator.bottomAnchor.constraint(
+      equalTo: textAreaBackground.topAnchor,
+      constant: 16)
+    typingIndicatorBottomConstraint.isActive = true
+
+    NSLayoutConstraint.activate([
+      typingIndicator.heightAnchor.constraint(equalToConstant: 20),
+      typingIndicator.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 26)
+    ])
+
+  }
+  
+  private func setTypingIndicatorVisible(_ isVisible: Bool) {
+    let constant: CGFloat = isVisible ? -16 : 16
+    UIView.animate(withDuration: 0.4, delay: 0, options: .curveEaseInOut, animations: {
+      self.typingIndicatorBottomConstraint.constant = constant
+      self.view.layoutIfNeeded()
+    })
+  }
+
   
   // MARK: - Actions
   
@@ -46,7 +73,8 @@ final class ChatViewController: UIViewController {
     addTextViewPlaceholer()
     scrollToLastCell()
     
-    ChatService.shared.send(message: message, to: reciever)
+    ChatService.shared.stopTyping(to: receiver)
+    ChatService.shared.send(message: message, to: receiver)
   }
   
   var messages: [Message] = [] {
@@ -61,7 +89,7 @@ final class ChatViewController: UIViewController {
   override func viewDidLoad() {
     super.viewDidLoad()
     
-    title = reciever.name
+    title = receiver.name
     
     emptyChatView.isHidden = false
     
@@ -70,21 +98,36 @@ final class ChatViewController: UIViewController {
     startObservingKeyboard()
     tableView.dataSource = self
     
-    ChatService.shared.onRecievedMessage = { [weak self] message in
+    ChatService.shared.onReceivedMessage = { [weak self] message in
       guard let self = self else { return }
-      let isFromReciever = message.user == self.reciever
-      if !message.isIncoming || isFromReciever {
+      let isFromReceiver = message.user == self.receiver
+      if !message.isIncoming || isFromReceiver {
         self.messages.append(message)
         self.scrollToLastCell()
       }
     }
+    
+    createTypingIndicator()
+    
+    ChatService.shared.onTypingStarted = { [weak self] user in
+      if user.id == self?.receiver.id {
+        self?.setTypingIndicatorVisible(true)
+      }
+    }
+
+    ChatService.shared.onTypingEnded = { [weak self] user in
+      if user.id == self?.receiver.id {
+        self?.setTypingIndicatorVisible(false)
+      }
+    }
+
   }
   
   override func viewWillAppear(_ animated: Bool) {
     super.viewWillAppear(animated)
     addTextViewPlaceholer()
     
-    ChatService.shared.getMessages(from: reciever) { [weak self] messages in
+    ChatService.shared.getMessages(from: receiver) { [weak self] messages in
       self?.messages = messages
       self?.scrollToLastCell()
     }
@@ -162,6 +205,8 @@ final class ChatViewController: UIViewController {
         self.view.layoutIfNeeded()
     })
   }
+  
+  
   
   
   // MARK: - Set up
@@ -256,5 +301,25 @@ extension ChatViewController: UITextViewDelegate {
       addTextViewPlaceholer()
     }
   }
+  
+  // 1
+  func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
+
+    let currentText: String = textView.text
+    let range = Range(range, in: currentText)!
+    let newText = currentText.replacingCharacters(in: range, with: text)
+    
+    switch (currentText.isEmpty, newText.isEmpty) {
+    case (true, false):
+      ChatService.shared.startTyping(to: receiver)
+    case (false, true):
+      ChatService.shared.stopTyping(to: receiver)
+    default:
+      break
+    }
+    
+    return true
+  }
+
 }
 

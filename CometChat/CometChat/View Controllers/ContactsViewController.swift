@@ -71,7 +71,7 @@ final class ContactsViewController: UIViewController {
         return
       }
       
-      chatVC.reciever = contact
+      chatVC.receiver = contact
     default:
       break
     }

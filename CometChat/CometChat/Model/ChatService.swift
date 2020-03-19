@@ -13,10 +13,23 @@ extension String: Error {}
 
 final class ChatService {
   
+  var onTypingStarted: ((User)-> Void)?
+  var onTypingEnded: ((User)-> Void)?
+
+  func startTyping(to receiver: User) {
+    let typingIndicator = TypingIndicator(receiverID: receiver.id, receiverType: .user)
+    CometChat.startTyping(indicator: typingIndicator)
+  }
+  func stopTyping(to receiver: User) {
+    let typingIndicator = TypingIndicator(receiverID: receiver.id, receiverType: .user)
+    CometChat.endTyping(indicator: typingIndicator)
+  }
+
+  
   private enum Constants {
     #warning("Don't forget to set your API key and app ID here!")
-    static let cometChatAPIKey = "API_KEY"
-    static let cometChatAppID = "APP_ID"
+    static let cometChatAPIKey = "b8db5f3457ef8b1ac4f7c239aa565b36387c2273"
+    static let cometChatAppID = "138640e094f002e"
   }
   
   static let shared = ChatService()
@@ -40,7 +53,7 @@ final class ChatService {
   }
   
   private var user: User?
-  var onRecievedMessage: ((Message)-> Void)?
+  var onReceivedMessage: ((Message)-> Void)?
   var onUserStatusChanged: ((User)-> Void)?
   
   func login(email: String, onComplete: @escaping (Result<User, Error>)-> Void) {
@@ -67,13 +80,13 @@ final class ChatService {
       })
   }
   
-  func send(message: String, to reciever: User) {
+  func send(message: String, to receiver: User) {
     guard let user = user else {
       return
     }
     
     let textMessage = TextMessage(
-      receiverUid: reciever.id,
+      receiverUid: receiver.id,
       text: message,
       receiverType: .user)
     
@@ -83,7 +96,7 @@ final class ChatService {
         guard let self = self else { return }
         print("Message sent")
         DispatchQueue.main.async {
-          self.onRecievedMessage?(Message(user: user, content: message, isIncoming: false))
+          self.onReceivedMessage?(Message(user: user, content: message, isIncoming: false))
         }
       },
       onError: { error in
@@ -149,7 +162,7 @@ final class ChatService {
 extension ChatService: CometChatMessageDelegate {
   func onTextMessageReceived(textMessage: TextMessage) {
     DispatchQueue.main.async {
-      self.onRecievedMessage?(Message(textMessage, isIncoming: true))
+      self.onReceivedMessage?(Message(textMessage, isIncoming: true))
     }
   }
 }
@@ -167,5 +180,26 @@ extension ChatService: CometChatUserDelegate {
       self.onUserStatusChanged?(User(cometChatUser))
     }
   }
+  
+  func onTypingStarted(_ typingDetails: TypingIndicator) {
+    guard let cometChatUser = typingDetails.sender else {
+      return
+    }
+    
+    DispatchQueue.main.async {
+      self.onTypingStarted?(User(cometChatUser))
+    }
+  }
+
+  func onTypingEnded(_ typingDetails: TypingIndicator) {
+    guard let cometChatUser = typingDetails.sender else {
+      return
+    }
+
+    DispatchQueue.main.async {
+      self.onTypingEnded?(User(cometChatUser))
+    }
+  }
+
   
 }

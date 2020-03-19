@@ -236,45 +236,6 @@
                                     </tableViewCell>
                                 </prototypes>
                             </tableView>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="S9f-Nh-2Z1">
-                                <rect key="frame" x="0.0" y="772" width="414" height="124"/>
-                                <subviews>
-                                    <stackView opaque="NO" contentMode="scaleToFill" spacing="16" translatesAutoresizingMaskIntoConstraints="NO" id="fPw-a6-CvX">
-                                        <rect key="frame" x="0.0" y="0.0" width="414" height="90"/>
-                                        <subviews>
-                                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" text="Type something" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="4wA-t0-gDh">
-                                                <rect key="frame" x="16" y="20" width="341" height="50"/>
-                                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                                <color key="textColor" name="placeholderBody"/>
-                                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                                <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
-                                            </textView>
-                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Voy-ai-fDO">
-                                                <rect key="frame" x="373" y="20" width="25" height="50"/>
-                                                <constraints>
-                                                    <constraint firstAttribute="width" constant="25" id="zpI-4S-jrL"/>
-                                                </constraints>
-                                                <state key="normal" image="send_button"/>
-                                                <connections>
-                                                    <action selector="onSendButtonTapped:" destination="BYZ-38-t0r" eventType="touchUpInside" id="Ixw-Q4-JAw"/>
-                                                </connections>
-                                            </button>
-                                        </subviews>
-                                        <color key="backgroundColor" name="lightBody"/>
-                                        <constraints>
-                                            <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="60" id="bMw-Um-IMe"/>
-                                        </constraints>
-                                        <edgeInsets key="layoutMargins" top="20" left="16" bottom="20" right="16"/>
-                                    </stackView>
-                                </subviews>
-                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                <constraints>
-                                    <constraint firstAttribute="trailing" secondItem="fPw-a6-CvX" secondAttribute="trailing" id="AYT-ne-Mcq"/>
-                                    <constraint firstItem="fPw-a6-CvX" firstAttribute="leading" secondItem="S9f-Nh-2Z1" secondAttribute="leading" id="IEZ-Ds-SDf"/>
-                                    <constraint firstItem="fPw-a6-CvX" firstAttribute="top" secondItem="S9f-Nh-2Z1" secondAttribute="top" id="W3n-Jo-5AP"/>
-                                    <constraint firstItem="fPw-a6-CvX" firstAttribute="centerX" secondItem="S9f-Nh-2Z1" secondAttribute="centerX" id="ifS-qe-JJ1"/>
-                                </constraints>
-                            </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Kl2-BN-zUg" userLabel="Empty">
                                 <rect key="frame" x="0.0" y="44" width="414" height="720"/>
                                 <subviews>
@@ -312,6 +273,45 @@
                                     <constraint firstAttribute="trailing" secondItem="0hV-SN-v3V" secondAttribute="trailing" id="Eps-5W-qkd"/>
                                     <constraint firstItem="0hV-SN-v3V" firstAttribute="centerX" secondItem="Kl2-BN-zUg" secondAttribute="centerX" id="F2F-uP-5gB"/>
                                     <constraint firstItem="0hV-SN-v3V" firstAttribute="centerY" secondItem="Kl2-BN-zUg" secondAttribute="centerY" id="WqV-8K-85s"/>
+                                </constraints>
+                            </view>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="S9f-Nh-2Z1">
+                                <rect key="frame" x="0.0" y="772" width="414" height="124"/>
+                                <subviews>
+                                    <stackView opaque="NO" contentMode="scaleToFill" spacing="16" translatesAutoresizingMaskIntoConstraints="NO" id="fPw-a6-CvX">
+                                        <rect key="frame" x="0.0" y="0.0" width="414" height="90"/>
+                                        <subviews>
+                                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" text="Type something" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="4wA-t0-gDh">
+                                                <rect key="frame" x="16" y="20" width="341" height="50"/>
+                                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                <color key="textColor" name="placeholderBody"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
+                                            </textView>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Voy-ai-fDO">
+                                                <rect key="frame" x="373" y="20" width="25" height="50"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="width" constant="25" id="zpI-4S-jrL"/>
+                                                </constraints>
+                                                <state key="normal" image="send_button"/>
+                                                <connections>
+                                                    <action selector="onSendButtonTapped:" destination="BYZ-38-t0r" eventType="touchUpInside" id="Ixw-Q4-JAw"/>
+                                                </connections>
+                                            </button>
+                                        </subviews>
+                                        <color key="backgroundColor" name="lightBody"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="60" id="bMw-Um-IMe"/>
+                                        </constraints>
+                                        <edgeInsets key="layoutMargins" top="20" left="16" bottom="20" right="16"/>
+                                    </stackView>
+                                </subviews>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <constraints>
+                                    <constraint firstAttribute="trailing" secondItem="fPw-a6-CvX" secondAttribute="trailing" id="AYT-ne-Mcq"/>
+                                    <constraint firstItem="fPw-a6-CvX" firstAttribute="leading" secondItem="S9f-Nh-2Z1" secondAttribute="leading" id="IEZ-Ds-SDf"/>
+                                    <constraint firstItem="fPw-a6-CvX" firstAttribute="top" secondItem="S9f-Nh-2Z1" secondAttribute="top" id="W3n-Jo-5AP"/>
+                                    <constraint firstItem="fPw-a6-CvX" firstAttribute="centerX" secondItem="S9f-Nh-2Z1" secondAttribute="centerX" id="ifS-qe-JJ1"/>
                                 </constraints>
                             </view>
                         </subviews>
