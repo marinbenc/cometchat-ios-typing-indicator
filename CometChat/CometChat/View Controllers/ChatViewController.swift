@@ -26,34 +26,7 @@ final class ChatViewController: UIViewController {
   @IBOutlet weak var textAreaBackground: UIView!
   @IBOutlet weak var textAreaBottom: NSLayoutConstraint!
   @IBOutlet weak var emptyChatView: UIView!
-  
-  private var typingIndicatorBottomConstraint: NSLayoutConstraint!
-  
-  private func createTypingIndicator() {
-    let typingIndicator = TypingIndicatorView(receiverName: receiver.name)
-    view.insertSubview(typingIndicator, belowSubview: textAreaBackground)
-    
-    typingIndicatorBottomConstraint = typingIndicator.bottomAnchor.constraint(
-      equalTo: textAreaBackground.topAnchor,
-      constant: 16)
-    typingIndicatorBottomConstraint.isActive = true
-
-    NSLayoutConstraint.activate([
-      typingIndicator.heightAnchor.constraint(equalToConstant: 20),
-      typingIndicator.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 26)
-    ])
-
-  }
-  
-  private func setTypingIndicatorVisible(_ isVisible: Bool) {
-    let constant: CGFloat = isVisible ? -16 : 16
-    UIView.animate(withDuration: 0.4, delay: 0, options: .curveEaseInOut, animations: {
-      self.typingIndicatorBottomConstraint.constant = constant
-      self.view.layoutIfNeeded()
-    })
-  }
-
-  
+        
   // MARK: - Actions
   
   @IBAction func onSendButtonTapped(_ sender: Any) {
@@ -73,7 +46,6 @@ final class ChatViewController: UIViewController {
     addTextViewPlaceholer()
     scrollToLastCell()
     
-    ChatService.shared.stopTyping(to: receiver)
     ChatService.shared.send(message: message, to: receiver)
   }
   
@@ -107,20 +79,6 @@ final class ChatViewController: UIViewController {
       }
     }
     
-    createTypingIndicator()
-    
-    ChatService.shared.onTypingStarted = { [weak self] user in
-      if user.id == self?.receiver.id {
-        self?.setTypingIndicatorVisible(true)
-      }
-    }
-
-    ChatService.shared.onTypingEnded = { [weak self] user in
-      if user.id == self?.receiver.id {
-        self?.setTypingIndicatorVisible(false)
-      }
-    }
-
   }
   
   override func viewWillAppear(_ animated: Bool) {
@@ -302,24 +260,5 @@ extension ChatViewController: UITextViewDelegate {
     }
   }
   
-  // 1
-  func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
-
-    let currentText: String = textView.text
-    let range = Range(range, in: currentText)!
-    let newText = currentText.replacingCharacters(in: range, with: text)
-    
-    switch (currentText.isEmpty, newText.isEmpty) {
-    case (true, false):
-      ChatService.shared.startTyping(to: receiver)
-    case (false, true):
-      ChatService.shared.stopTyping(to: receiver)
-    default:
-      break
-    }
-    
-    return true
-  }
-
 }
 
