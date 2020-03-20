@@ -6,7 +6,7 @@ Read the full tutorial here:
 
 This example shows how to build an anonymous group chat app with a typing indciator in Swift:
 
-![](screenshots/TODO)
+![](screenshots/typing-indicator.gif)
 
 ## Technology
 
@@ -25,9 +25,9 @@ To run the demo follow these steps:
 3. Once created, click **Explore**.
 4. Go to the **API Keys** tab and click **Create API Key**.
 5. Create an API key called "Swift 1 on 1 Chat Key" with **Full Access**.
-4. Download the repository [here](TODO) or by running `https://github.com/cometchat-pro-tutorials/TODO`.
+4. Download the repository [here](https://github.com/marinbenc/cometchat-ios-typing-indicator/archive/master.zip) or by cloning `https://github.com/marinbenc/cometchat-ios-typing-indicator.git`.
 5. Navigate to project directory and use `pod install` command to install the pods and open **CometChat.xcworkspace** in Xcode.
-6 Update the `Constants` in [ChatService.swift](https://github.com/cometchat-pro-tutorials/TODO) with your newly-created app ID, API key and Region code.
+6 Update the `Constants` in [ChatService.swift](https://github.com/marinbenc/cometchat-ios-typing-indicator/blob/master/CometChat/CometChat/Model/ChatService.swift) with your newly-created app ID, API key and Region code.
 7. Run the app and login with one of the test users: superhero1, superhero2, superhero3, superhero4 or superhero5.
 
 Questions about running the demo? [Open an issue](https://github.com/cometchat-pro-tutorials/TODO/issues). We're here to help ✌️
