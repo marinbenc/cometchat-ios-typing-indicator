@@ -15,8 +15,8 @@ final class ChatService {
   
   private enum Constants {
     #warning("Don't forget to set your API key and app ID here!")
-    static let cometChatAPIKey = "b8db5f3457ef8b1ac4f7c239aa565b36387c2273"
-    static let cometChatAppID = "138640e094f002e"
+    static let cometChatAPIKey = "API_KEY"
+    static let cometChatAppID = "APP_ID"
   }
   
   static let shared = ChatService()
