@@ -11,30 +11,39 @@ import CometChatPro
 
 extension String: Error {}
 
+/// A class that deals with communicating back and forth with CometChat.
 final class ChatService {
   
+  private enum Constants {
+    #warning("Don't forget to set your API key and app ID here!")
+    static let cometChatAPIKey = "API_KEY"
+    static let cometChatAppID = "APP_ID"
+  }
+  
+  /// A  callback called when a user starts typing a message.
   var onTypingStarted: ((User)-> Void)?
+  /// A callback called when a user stops typing a message.
   var onTypingEnded: ((User)-> Void)?
 
+  
+  /// Notifies CometChat that typing has started for the currently logged in user.
+  /// - Parameter receiver: the user that the current user is typing to
   func startTyping(to receiver: User) {
     let typingIndicator = TypingIndicator(receiverID: receiver.id, receiverType: .user)
     CometChat.startTyping(indicator: typingIndicator)
   }
+  
+  /// Notifies CometChat that typing has stopped for the currently logged in user.
+  /// - Parameter receiver: the user that the current user is typing to
   func stopTyping(to receiver: User) {
     let typingIndicator = TypingIndicator(receiverID: receiver.id, receiverType: .user)
     CometChat.endTyping(indicator: typingIndicator)
-  }
-
-  
-  private enum Constants {
-    #warning("Don't forget to set your API key and app ID here!")
-    static let cometChatAPIKey = "b8db5f3457ef8b1ac4f7c239aa565b36387c2273"
-    static let cometChatAppID = "138640e094f002e"
   }
   
   static let shared = ChatService()
   private init() {}
   
+  /// Sets up CometChat for use. Call this function once, when the application starts up.
   static func initialize() {
     let settings = AppSettings.AppSettingsBuilder()
       .subscribePresenceForAllUsers()
@@ -52,12 +61,16 @@ final class ChatService {
       })
   }
   
+  /// The currently logged in user.
   private var user: User?
+  
+  /// A callback called when the user receives a new message, or the user sends a message to CometChat.
   var onReceivedMessage: ((Message)-> Void)?
+  /// A callback called when the user goes online or offline.
   var onUserStatusChanged: ((User)-> Void)?
   
+  /// Logs the user into CometChat.
   func login(email: String, onComplete: @escaping (Result<User, Error>)-> Void) {
-    
     CometChat.messagedelegate = self
     CometChat.userdelegate = self
     
@@ -66,7 +79,10 @@ final class ChatService {
       apiKey: Constants.cometChatAPIKey,
       onSuccess: { [weak self] cometChatUser in
         guard let self = self else { return }
+        // Convert CometChat's User to our own User struct
         self.user = User(cometChatUser)
+        // CometChat methods are run in the background. Make sure to get
+        // back to the main queue before returning control back to the caller
         DispatchQueue.main.async {
           onComplete(.success(self.user!))
         }
@@ -80,6 +96,7 @@ final class ChatService {
       })
   }
   
+  /// Sends a message to CometChat.
   func send(message: String, to receiver: User) {
     guard let user = user else {
       return
@@ -96,6 +113,8 @@ final class ChatService {
         guard let self = self else { return }
         print("Message sent")
         DispatchQueue.main.async {
+          // Call the callback for "receiving" a message from the current user, so that
+          // the UI can handle all messages from a single callback.
           self.onReceivedMessage?(Message(user: user, content: message, isIncoming: false))
         }
       },
@@ -106,10 +125,12 @@ final class ChatService {
   }
   
   private var usersRequest: UsersRequest?
+  /// Loads all users inside a CometChat app.
   func getUsers(onComplete: @escaping ([User])-> Void) {
     usersRequest = UsersRequest.UsersRequestBuilder().build()
     usersRequest?.fetchNext(
       onSuccess: { cometChatUsers in
+        // Again, convert all CometChat users to instances of User
         let users = cometChatUsers.map(User.init)
         DispatchQueue.main.async {
           onComplete(users)
@@ -123,6 +144,7 @@ final class ChatService {
   }
   
   private var messagesRequest: MessagesRequest?
+  /// Loads up to the last 50 messages sent between the current user and `sender`.
   func getMessages(from sender: User, onComplete: @escaping ([Message])-> Void) {
     guard let user = user else {
       return
@@ -144,7 +166,9 @@ final class ChatService {
         }
         
         let messages = fetchedMessages
+          // Grab only text messages
           .compactMap { $0 as? TextMessage }
+          // Convert them to Message, and set them as outgoing if they're not sent by the current user
           .map { Message($0, isIncoming: $0.senderUid.lowercased() != user.id.lowercased()) }
         
         DispatchQueue.main.async {

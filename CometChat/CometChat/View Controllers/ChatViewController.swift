@@ -27,6 +27,9 @@ final class ChatViewController: UIViewController {
   @IBOutlet weak var textAreaBottom: NSLayoutConstraint!
   @IBOutlet weak var emptyChatView: UIView!
   
+  /// The space between the bottom of the typing indicator and the top of the message input area.
+  /// Positive values mean that the typing indicator is below the message area, so it's not visible.
+  /// By setting it to a negative value, you raise it above the message are and thus make it visible.
   private var typingIndicatorBottomConstraint: NSLayoutConstraint!
   
   private func createTypingIndicator() {
@@ -35,6 +38,8 @@ final class ChatViewController: UIViewController {
     
     typingIndicatorBottomConstraint = typingIndicator.bottomAnchor.constraint(
       equalTo: textAreaBackground.topAnchor,
+      // Set the constant to 16 at start. This means that the top of the
+      // typing indicator will be below the top of the text area.
       constant: 16)
     typingIndicatorBottomConstraint.isActive = true
 
@@ -79,6 +84,7 @@ final class ChatViewController: UIViewController {
   
   var messages: [Message] = [] {
     didSet {
+      // Hide the "no messages" view if there are messages
       emptyChatView.isHidden = !messages.isEmpty
       tableView.reloadData()
     }
@@ -91,6 +97,7 @@ final class ChatViewController: UIViewController {
     
     title = receiver.name
     
+    // By default, show the "no messages" view
     emptyChatView.isHidden = false
     
     setUpTableView()
@@ -101,6 +108,9 @@ final class ChatViewController: UIViewController {
     ChatService.shared.onReceivedMessage = { [weak self] message in
       guard let self = self else { return }
       let isFromReceiver = message.user == self.receiver
+      // Only add the message if it comes from the current user or
+      // the receiver of this screen. Without this check, messages
+      // from other users could get added to the list.
       if !message.isIncoming || isFromReceiver {
         self.messages.append(message)
         self.scrollToLastCell()
@@ -110,6 +120,7 @@ final class ChatViewController: UIViewController {
     createTypingIndicator()
     
     ChatService.shared.onTypingStarted = { [weak self] user in
+      // Only show the typing indicator if this screen's receiver is typing.
       if user.id == self?.receiver.id {
         self?.setTypingIndicatorVisible(true)
       }
@@ -120,13 +131,13 @@ final class ChatViewController: UIViewController {
         self?.setTypingIndicatorVisible(false)
       }
     }
-
   }
   
   override func viewWillAppear(_ animated: Bool) {
     super.viewWillAppear(animated)
     addTextViewPlaceholer()
     
+    // Load past messages between the current user and the receiver.
     ChatService.shared.getMessages(from: receiver) { [weak self] messages in
       self?.messages = messages
       self?.scrollToLastCell()
@@ -170,11 +181,13 @@ final class ChatViewController: UIViewController {
   }
   
   private func keyboardWillAppear(_ notification: Notification) {
+    // Get the keyboard height
     let key = UIResponder.keyboardFrameEndUserInfoKey
     guard let keyboardFrame = notification.userInfo?[key] as? CGRect else {
       return
     }
     
+    // Remove the safe are offset from the keyboard height
     let safeAreaBottom = view.safeAreaLayoutGuide.layoutFrame.maxY
     let viewHeight = view.bounds.height
     let safeAreaOffset = viewHeight - safeAreaBottom
@@ -186,8 +199,10 @@ final class ChatViewController: UIViewController {
       delay: 0,
       options: [.curveEaseInOut],
       animations: {
+        // Raise the text area to match the keyboard's height
         self.textAreaBottom.constant = -keyboardFrame.height + safeAreaOffset
         self.view.layoutIfNeeded()
+        // Scroll to the last message if it's no longer visible
         if let lastVisibleCell = lastVisibleCell {
           self.tableView.scrollToRow(
             at: lastVisibleCell, at: .bottom, animated: false)
@@ -247,10 +262,14 @@ extension ChatViewController: UITableViewDataSource {
     cellForRowAt indexPath: IndexPath) -> UITableViewCell {
     
     let message = messages[indexPath.row]
+    // Dequeue either an incoming message cell, or outgoing, depending on
+    // if the message is incoming or not.
     let cellIdentifier = message.isIncoming ?
       Constants.incomingMessageCell :
       Constants.outgoingMessageCell
     
+    // The cells conform to the `MessageCell` protocol, so we can cast them to
+    // `MessageCell & UITableViewCell` protocol composition type.
     guard let cell = tableView.dequeueReusableCell(
       withIdentifier: cellIdentifier, for: indexPath)
       as? MessageCell & UITableViewCell else {
@@ -259,6 +278,7 @@ extension ChatViewController: UITableViewDataSource {
     
     cell.message = message
     
+    // Only show the avatar if the previous message was from a different user.
     if indexPath.row < messages.count - 1 {
       let nextMessage = messages[indexPath.row + 1]
       cell.showsAvatar = message.isIncoming != nextMessage.isIncoming
@@ -282,6 +302,10 @@ extension ChatViewController: UITableViewDataSource {
 
 // MARK: - UITextViewDelegate
 extension ChatViewController: UITextViewDelegate {
+  
+  // By default, a `UITextView` doesn't have placeholders.
+  // These functions will add or remove a placeholder to the text view.
+  
   private func addTextViewPlaceholer() {
     textView.text = Constants.placeholderMessage
     textView.textColor = .placeholderBody
@@ -292,27 +316,30 @@ extension ChatViewController: UITextViewDelegate {
     textView.textColor = .darkBody
   }
   
+  // When the user starts typing, remove the placeholder.
   func textViewDidBeginEditing(_ textView: UITextView) {
     removeTextViewPlaceholder()
   }
   
+  // When the user stops typing, if the text view is empty, add the placeholder.
   func textViewDidEndEditing(_ textView: UITextView) {
     if textView.text.isEmpty {
       addTextViewPlaceholer()
     }
   }
   
-  // 1
   func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
-
     let currentText: String = textView.text
     let range = Range(range, in: currentText)!
+    // Grab the future value of the text view's text
     let newText = currentText.replacingCharacters(in: range, with: text)
     
     switch (currentText.isEmpty, newText.isEmpty) {
     case (true, false):
+      // Text view will stop being empty
       ChatService.shared.startTyping(to: receiver)
     case (false, true):
+      // Text view will become empty
       ChatService.shared.stopTyping(to: receiver)
     default:
       break

@@ -23,6 +23,7 @@ extension User {
 }
 
 extension User {
+  /// Converts a CometChat `User` into `User`
   init(_ cometChatUser: CometChatPro.User) {
     self.id = cometChatUser.uid ?? "unknown"
     self.name = cometChatUser.name ?? "unknown"

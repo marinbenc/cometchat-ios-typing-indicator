@@ -19,6 +19,7 @@ final class WelcomeViewController: UIViewController {
     navigationBar?.backIndicatorImage = #imageLiteral(resourceName: "back")
     navigationBar?.backIndicatorTransitionMaskImage = #imageLiteral(resourceName: "back")
     navigationBar?.barTintColor = .white
+    // Remove the navigation bar shadow
     navigationBar?.shadowImage = UIImage()
     
     loginButton.layer.cornerRadius = 5

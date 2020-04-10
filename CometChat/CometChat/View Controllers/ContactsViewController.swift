@@ -33,12 +33,15 @@ final class ContactsViewController: UIViewController {
       offset: CGSize(width: 0, height: 2),
       radius: 10)
     
+    // Called when a user comes online or goes offline.
     ChatService.shared.onUserStatusChanged = { [weak self] user in
       guard let self = self else { return }
+      // Grab the index of the changed user.
       guard let index = self.contacts.firstIndex(of: user) else {
         return
       }
       
+      // Set the new user to that index.
       self.contacts[index] = user
       self.tableView.reloadData()
     }

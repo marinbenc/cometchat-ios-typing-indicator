@@ -16,6 +16,7 @@ struct Message {
 }
 
 extension Message {
+  /// Converts a CometChat `TextMessage` into `Message`
   init(_ textMessage: TextMessage, isIncoming: Bool) {
     user = User(
       id: textMessage.senderUid,
